@@ -3,7 +3,7 @@
  *  UserMenu class - handle the user's menu                                            *
  *                                                                                     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var NewLibPlayMenu = function() {
+export default function NewLibPlayMenu() {
     this.newLibPlayMenu = null;
     this.entries = {
         library: null,

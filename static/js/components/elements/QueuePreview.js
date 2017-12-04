@@ -1,21 +1,21 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  QueueView class - classical queue (pre)view                                        *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var QueuePreview = function(container) {
-    this.contextMenu = null;
-    this.reverse = window.app.queue.isReverse();
+*                                                                                     *
+*  QueueView class - classical queue (pre)view                                        *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+class QueuePreview {
 
-    this._createUI(container);
-    this._eventListener();
-    this._contextMenuSetup();
+    construct(container) {
+        this.contextMenu = null;
+        this.reverse = window.app.queue.isReverse();
 
-};
+        this._createUI(container);
+        this._eventListener();
+        this._contextMenuSetup();
 
-QueuePreview.prototype = {
+    }
 
-    _createUI: function(container) {
+    _createUI(container) {
         this.ui = {
             container:  document.createElement("DIV"),
             statusBar:  {
@@ -44,9 +44,9 @@ QueuePreview.prototype = {
         this.ui.container.appendChild(this.ui.statusBar.container);
 
         container.appendChild(this.ui.container);
-    },
+    }
 
-    addEntry: function(track) {
+    addEntry(track) {
         var li              = document.createElement("LI");
         var img             = document.createElement("IMG");
         var body            = document.createElement("DIV");
@@ -82,31 +82,31 @@ QueuePreview.prototype = {
         li.appendChild(qControls);
 
         this.ui.queueList.appendChild(li);
-    },
+    }
 
-    show: function(event) {
+    show(event) {
         toggleVisibilityLock(this.ui.container);
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-    },
+    }
 
-    _eventListener: function() {
+    _eventListener() {
         var self = this;
         var findParentLI = function(element) {
             while(element.tagName != 'UL' && element.tagName != 'LI')
-                element = element.parentNode;
+            element = element.parentNode;
             if(element.tagName == 'LI')
-                return element;
+            return element;
             else
-                return null;
+            return null;
         };
 
         window.app.addListener('pushQueue', function(track) {
-           self.addEntry(track);
+            self.addEntry(track);
         });
         window.app.addListener('popQueue', function(track) {
-           self.ui.queueList.removeChild(self.reverse ? self.ui.queueList.lastChild : self.ui.queueList.firstChild);
+            self.ui.queueList.removeChild(self.reverse ? self.ui.queueList.lastChild : self.ui.queueList.firstChild);
         });
         window.app.addListener('reverseQueue', function(reverse) {
             self.reverse = reverse;
@@ -120,30 +120,30 @@ QueuePreview.prototype = {
             var li, sib;
             switch(event.target.dataset.callback) {
                 case 'moveUp':
-                    li = findParentLI(event.target);
-                    if(li != null) {
-                        sib = li.previousSibling;
-                        if(sib != null) {
-                            for(var i = 0; li.parentNode.children[i] != li; i++);
-                            self.ui.queueList.insertBefore(self.ui.queueList.removeChild(li), sib);
-                            window.app.moveQueue(i, i -1);
-                        }
+                li = findParentLI(event.target);
+                if(li != null) {
+                    sib = li.previousSibling;
+                    if(sib != null) {
+                        for(var i = 0; li.parentNode.children[i] != li; i++);
+                        self.ui.queueList.insertBefore(self.ui.queueList.removeChild(li), sib);
+                        window.app.moveQueue(i, i -1);
                     }
-                    break;
+                }
+                break;
                 case 'moveDown':
-                    li = findParentLI(event.target);
-                    if(li != null) {
-                        sib = li.nextSibling;
-                        if(sib != null) {
-                            for(var i = 0; li.parentNode.children[i] != li; i++);
-                            self.ui.queueList.insertBefore(self.ui.queueList.removeChild(li), sib.nextSibling);
-                            window.app.moveQueue(i, i + 1);
-                        }
-
+                li = findParentLI(event.target);
+                if(li != null) {
+                    sib = li.nextSibling;
+                    if(sib != null) {
+                        for(var i = 0; li.parentNode.children[i] != li; i++);
+                        self.ui.queueList.insertBefore(self.ui.queueList.removeChild(li), sib.nextSibling);
+                        window.app.moveQueue(i, i + 1);
                     }
-                    break;
+
+                }
+                break;
                 default:
-                    break;
+                break;
             }
         });
 
@@ -155,11 +155,13 @@ QueuePreview.prototype = {
         });
 
         document.body.addEventListener('click', function() {
-           removeVisibilityLock(self.ui.container);
+            removeVisibilityLock(self.ui.container);
         });
-    },
+    }
 
-    _contextMenuSetup: function () {
+    _contextMenuSetup () {
 
     }
-};
+}
+
+export default QueuePreview

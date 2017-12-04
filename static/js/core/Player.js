@@ -3,7 +3,8 @@
  *  Player class - handle song streaming client side, and std action on it             *
  *                                                                                     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var Player = function(cookies) {
+class Player {
+    constructor(cookies) {
     this.cookies = cookies;
 
     this.player = document.getElementById("audioPlayer");
@@ -15,100 +16,97 @@ var Player = function(cookies) {
     this.oldVolume = 0;
 
     this.init();
-};
+    }
 
-
-Player.prototype = {
-
-    init: function() {
+    init() {
         this.player.volume = 0.5; // TODO : init from global var in App
         this._eventListener();
-    },
+    }
 
 
-    play: function() {
+    play() {
         this.isPlaying = true;
         this.player.play();
-    },
+    }
 
 
-    pause: function() {
+    pause() {
         this.isPlaying = false;
         this.player.pause();
-    },
+    }
 
 
     // Player controls
-    togglePlay: function() {
+    togglePlay() {
         if (this.isPlaying) {
             this.pause();
         } else {
             this.play();
         }
-    },
+    }
 
 
-    stopPlayback: function() {
+    stopPlayback() {
         this.pause();
         this.isPlaying = false;
         this.player.currentTime = 0;
         // OR this, but it doesn't keep in memory the current track (to think about)
         // this.player.src = "";
         // TODO : Make a real stop feature ...
-    },
+    }
 
 
-    fastForward: function(event) {
+    fastForward(event) {
         if (event.ctrlKey) {
             window.app.fastForward(30);
         } else {
             window.app.fastForward(10);
         }
-    },
+    }
 
 
-    rewind: function(event) {
+    rewind(event) {
         if (event.ctrlKey) {
             window.app.rewind(30);
         } else {
             window.app.rewind(10);
         }
-    },
+    }
 
 
-    mute: function() {
+    mute() {
         this.isMuted = true;
         this.oldVolume = this.player.volume;
         this.player.volume = 0;
-    },
+    }
 
 
-    unmute: function() {
+    unmute() {
         this.isMuted = false;
         this.player.volume = this.oldVolume;
-    },
+    }
 
 
-    changeTrack: function(url) {
+    changeTrack(url) {
         this.stopPlayback();
         this.player.src = url;
-    },
+    }
 
-
-    repeatTrack: function() {
+    repeatTrack() {
         this.player.currentTime = 0;
-    },
+    }
 
-
-    _eventListener: function() {
+    _eventListener() {
         this.player.addEventListener("ended", window.app.next.bind(window.app));
-    },
-
+    }
 
     // Class Getters and Setters
-    getPlayer: function()                 { return this.player;             },
-    getIsPlaying: function()              { return this.isPlaying;          },
+    getPlayer()                 { return this.player;             }
+    getIsPlaying()              { return this.isPlaying;          }
 
-    setIsMuted: function(muted)           { this.isMuted = muted;           },
-    setVolume: function(volume)           { this.player.volume = volume;    }
-};
+    setIsMuted(muted)           { this.isMuted = muted;           }
+    setVolume(volume)           { this.player.volume = volume;    }
+
+}
+
+export default Player

@@ -1,0 +1,22 @@
+{
+  "name": "manazeak",
+  "version": "0.1.0",
+  "description": "",
+  "main": "static/js/App.js",
+  "scripts": {
+    "dev": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Squadella/ManaZeak.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Squadella/ManaZeak/issues"
+  },
+  "homepage": "https://github.com/Squadella/ManaZeak#readme",
+  "devDependencies": {
+    "webpack": "^3.9.1"
+  }
+}

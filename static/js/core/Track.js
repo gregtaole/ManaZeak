@@ -1,54 +1,52 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  Track class - track object from db with all its metadata                           *
- *                                                                                     *
- *  track     : raw track incoming from db JSON                                        *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var Track = function(track) {
+*                                                                                     *
+*  Track class - track object from db with all its metadata                           *
+*                                                                                     *
+*  track     : raw track incoming from db JSON                                        *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+class Track {
+    constructor(track) {
 
-    // Track internal attributes
-    this.ui = {
-        entry: null,
-        id: null,
-        x: 0,
-        y: 0
-    };
-    this.isSelected = false;
-
-
-    // Filling Track object
-    this.id = {
-        track: track.ID                         !== "null" ? track.ID : "",
-        album: track.ALBUM.ID                   !== "null" ? track.ALBUM.ID : "",
-        artists: this._getArtistsIDFromArtistsArray(track.ARTISTS)
-    };
-    this.title        = track.TITLE             !== "null" ? track.TITLE : "";
-    this.year         = track.YEAR              !== "null" ? track.YEAR : "";
-    this.composer     = track.COMPOSER          !== "null" ? track.COMPOSER : "";
-    this.performer    = track.PERFORMER         !== "null" ? track.PERFORMER : "";
-    this.track        = track.TRACK_NUMBER      !== "null" ? track.TRACK_NUMBER : "";
-    this.trackTotal   = track.ALBUM.TOTAL_TRACK !== "null" ? track.ALBUM.TOTAL_TRACK : "";
-    this.disc         = track.DISC_NUMBER       !== "null" ? track.DISC_NMBER : "";
-    this.discTotal    = track.ALBUM.TOTAL_DISC  !== "null" ? track.ALBUM.TOTAL_DISC : "";
-    this.bpm          = track.BPM               !== "null" ? track.BPM : "";
-    this.lyrics       = track.LYRICS            !== "null" ? track.LYRICS : "";
-    this.comment      = track.COMMENT           !== "null" ? track.COMMENT : "";
-    this.bitRate      = track.BITRATE           !== "null" ? track.BITRATE : "";
-    this.sampleRate   = track.SAMPLERATE        !== "null" ? track.SAMPLERATE : "";
-    this.duration     = track.DURATION          !== "null" ? track.DURATION : "";
-    this.size         = track.SIZE              !== "null" ? track.SIZE : "";
-    this.lastModified = track.LAST_MODIFIED     !== "null" ? track.LAST_MODIFIED : "";
-    this.artist       = this._getArtistFromArtistsArray(track.ARTISTS);
-    this.album        = track.ALBUM.TITLE       !== "null" ? track.ALBUM.TITLE : "";
-    this.genre        = track.GENRE             !== "null" ? track.GENRE : "";
-    this.fileType     = track.FILE_TYPE         !== "null" ? track.FILE_TYPE : "";
-};
+        // Track internal attributes
+        this.ui = {
+            entry: null,
+            id: null,
+            x: 0,
+            y: 0
+        };
+        this.isSelected = false;
 
 
-Track.prototype = {
+        // Filling Track object
+        this.id = {
+            track: track.ID                         !== "null" ? track.ID : "",
+            album: track.ALBUM.ID                   !== "null" ? track.ALBUM.ID : "",
+            artists: this._getArtistsIDFromArtistsArray(track.ARTISTS)
+        };
+        this.title        = track.TITLE             !== "null" ? track.TITLE : "";
+        this.year         = track.YEAR              !== "null" ? track.YEAR : "";
+        this.composer     = track.COMPOSER          !== "null" ? track.COMPOSER : "";
+        this.performer    = track.PERFORMER         !== "null" ? track.PERFORMER : "";
+        this.track        = track.TRACK_NUMBER      !== "null" ? track.TRACK_NUMBER : "";
+        this.trackTotal   = track.ALBUM.TOTAL_TRACK !== "null" ? track.ALBUM.TOTAL_TRACK : "";
+        this.disc         = track.DISC_NUMBER       !== "null" ? track.DISC_NMBER : "";
+        this.discTotal    = track.ALBUM.TOTAL_DISC  !== "null" ? track.ALBUM.TOTAL_DISC : "";
+        this.bpm          = track.BPM               !== "null" ? track.BPM : "";
+        this.lyrics       = track.LYRICS            !== "null" ? track.LYRICS : "";
+        this.comment      = track.COMMENT           !== "null" ? track.COMMENT : "";
+        this.bitRate      = track.BITRATE           !== "null" ? track.BITRATE : "";
+        this.sampleRate   = track.SAMPLERATE        !== "null" ? track.SAMPLERATE : "";
+        this.duration     = track.DURATION          !== "null" ? track.DURATION : "";
+        this.size         = track.SIZE              !== "null" ? track.SIZE : "";
+        this.lastModified = track.LAST_MODIFIED     !== "null" ? track.LAST_MODIFIED : "";
+        this.artist       = this._getArtistFromArtistsArray(track.ARTISTS);
+        this.album        = track.ALBUM.TITLE       !== "null" ? track.ALBUM.TITLE : "";
+        this.genre        = track.GENRE             !== "null" ? track.GENRE : "";
+        this.fileType     = track.FILE_TYPE         !== "null" ? track.FILE_TYPE : "";
+    }
 
-    _getArtistsIDFromArtistsArray: function(artists) {
+    _getArtistsIDFromArtistsArray(artists) {
         if (artists === "null") {
             return "";
         }
@@ -60,10 +58,10 @@ Track.prototype = {
         }
 
         return artistsID;
-    },
+    }
 
 
-    _getArtistFromArtistsArray: function(artists) {
+    _getArtistFromArtistsArray(artists) {
         if (artists === "null") {
             return "";
         }
@@ -85,4 +83,7 @@ Track.prototype = {
 
         return artist;
     }
-};
+
+}
+
+export default Track

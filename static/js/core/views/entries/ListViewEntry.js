@@ -1,72 +1,73 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  ListViewEntry class - list view entry                                              *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var ListViewEntry = function(track, listView) {
-    this.entry = document.createElement("DIV");
-    this.entry.className = "trackContainer";
+*                                                                                     *
+*  ListViewEntry class - list view entry                                              *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    this.track = track;
+import { secondsToTimecode } from '../../../utils/Utils.js'
 
-    var duration        = document.createElement("DIV");
-    var title           = document.createElement("DIV");
-    var artist          = document.createElement("DIV");
-    var composer        = document.createElement("DIV");
-    var performer       = document.createElement("DIV");
-    var album           = document.createElement("DIV");
-    var genre           = document.createElement("DIV");
-    var bitRate         = document.createElement("DIV");
-    var year            = document.createElement("DIV");
+class ListViewEntry {
+    constructor(track, listView) {
+        this.entry = document.createElement("DIV");
+        this.entry.className = "trackContainer";
 
-    duration.className  = "col-duration";
-    title.className     = "col-title";
-    artist.className    = "col-artist";
-    composer.className  = "col-composer";
-    performer.className = "col-performer";
-    album.className     = "col-album";
-    genre.className     = "col-genre";
-    bitRate.className   = "col-bitRate";
-    year.className      = "col-year";
+        this.track = track;
 
-    duration.innerHTML  = secondsToTimecode(track.duration);
-    title.innerHTML     = track.title;
-    artist.innerHTML    = track.artist;
-    composer.innerHTML  = track.composer;
-    performer.innerHTML = track.performer;
-    album.innerHTML     = track.album;
-    genre.innerHTML     = track.genre;
-    bitRate.innerHTML   = Math.round(track.bitRate / 1000) + " kbps";
-    year.innerHTML      = track.year;
+        var duration        = document.createElement("DIV");
+        var title           = document.createElement("DIV");
+        var artist          = document.createElement("DIV");
+        var composer        = document.createElement("DIV");
+        var performer       = document.createElement("DIV");
+        var album           = document.createElement("DIV");
+        var genre           = document.createElement("DIV");
+        var bitRate         = document.createElement("DIV");
+        var year            = document.createElement("DIV");
 
-    this.entry.appendChild(duration);
-    this.entry.appendChild(title);
-    this.entry.appendChild(artist);
-    this.entry.appendChild(composer);
-    //this.entry.appendChild(performer);
-    this.entry.appendChild(album);
-    this.entry.appendChild(genre);
-    this.entry.appendChild(bitRate);
-    this.entry.appendChild(year);
+        duration.className  = "col-duration";
+        title.className     = "col-title";
+        artist.className    = "col-artist";
+        composer.className  = "col-composer";
+        performer.className = "col-performer";
+        album.className     = "col-album";
+        genre.className     = "col-genre";
+        bitRate.className   = "col-bitRate";
+        year.className      = "col-year";
 
-    // ListViewEntry internal attributes
-    this.boundingRect = null;
-    this.isSelected = false;
+        duration.innerHTML  = secondsToTimecode(track.duration);
+        title.innerHTML     = track.title;
+        artist.innerHTML    = track.artist;
+        composer.innerHTML  = track.composer;
+        performer.innerHTML = track.performer;
+        album.innerHTML     = track.album;
+        genre.innerHTML     = track.genre;
+        bitRate.innerHTML   = Math.round(track.bitRate / 1000) + " kbps";
+        year.innerHTML      = track.year;
 
-    this.insert(listView);
-};
+        this.entry.appendChild(duration);
+        this.entry.appendChild(title);
+        this.entry.appendChild(artist);
+        this.entry.appendChild(composer);
+        //this.entry.appendChild(performer);
+        this.entry.appendChild(album);
+        this.entry.appendChild(genre);
+        this.entry.appendChild(bitRate);
+        this.entry.appendChild(year);
 
+        // ListViewEntry internal attributes
+        this.boundingRect = null;
+        this.isSelected = false;
 
-ListViewEntry.prototype = {
-    
-    insert: function(listView) {
+        this.insert(listView);
+    }
+
+    insert(listView) {
         this.entry.dataset.childID = listView.children.length;
         listView.appendChild(this.entry);
-    },
+    }
 
-    getIsSelected: function() { return this.isSelected; },
+    getIsSelected() { return this.isSelected; }
 
-    setIsSelected: function(isSelected) {
+    setIsSelected(isSelected) {
         this.isSelected = isSelected;
         if (this.isSelected) {
             this.entry.classList.add("mzk-selected");
@@ -76,4 +77,6 @@ ListViewEntry.prototype = {
             //this.entry.style.background = "none";
         }
     }
-};
+}
+
+export default ListViewEntry;

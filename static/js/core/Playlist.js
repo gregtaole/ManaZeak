@@ -1,70 +1,73 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  Playlist class - Allow multiple tracks manipulation                                *
- *                                                                                     *
- *  id         : integer      - the playlist ID in db                                  *
- *  newLibrary : boolean      - true means user wants to create a new library,         *
- *                              false means that user wants to load existing playlist  *
- *  cookies    : DOM Obj      - user cookies                                           *
- *  tracks     : Array[Track] - Playlist tracks                                        *
- *  callback   : function     - function to call after _fillTrack on newLibrary        *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+*                                                                                     *
+*  Playlist class - Allow multiple tracks manipulation                                *
+*                                                                                     *
+*  id         : integer      - the playlist ID in db                                  *
+*  newLibrary : boolean      - true means user wants to create a new library,         *
+*                              false means that user wants to load existing playlist  *
+*  cookies    : DOM Obj      - user cookies                                           *
+*  tracks     : Array[Track] - Playlist tracks                                        *
+*  callback        - function to call after _fillTrack on newLibrary        *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 //TODO: get shuffle and repeat from server
-var Playlist = function(id, name, isLibrary, isLoading, rawTracks, callback) {
 
-    // NewLibrary relative attributes, useless (if isLibrary = false && isLoading = false)
-    this.ui = {
-        infoLabel: null,
-        name:      null,
-        path:      null,
-        convert:   null,
-        scan:      null
-    };
-    this.scanModal = null;
+import Track from './Track.js'
+import { JSONParsedPostRequest } from '../utils/Utils.js'
 
-    // Playlist internal attributes
-    this.id = id;
-    this.name = name;
-    this.isLibrary = isLibrary;
-    this.isLoading = isLoading;
-    this.shuffleMode = 0; // 0 : off, 1 : random, 2: shuffle
-    this.repeatMode = 0; // 0 : off, 1 : one, 2: all
-    this.isRepeat  = false;
+class Playlist {
+    constructor(id, name, isLibrary, isLoading, rawTracks, callback) {
 
-    //TODO: fix this
-    if (typeof rawTracks !== 'undefined') {
-        this.rawTracks = rawTracks;
-    } else {
-        this.rawTracks = [];
+        // NewLibrary relative attributes, useless (if isLibrary = false && isLoading = false)
+        this.ui = {
+            infoLabel: null,
+            name:      null,
+            path:      null,
+            convert:   null,
+            scan:      null
+        };
+        this.scanModal = null;
+
+        // Playlist internal attributes
+        this.id = id;
+        this.name = name;
+        this.isLibrary = isLibrary;
+        this.isLoading = isLoading;
+        this.shuffleMode = 0; // 0 : off, 1 : random, 2: shuffle
+        this.repeatMode = 0; // 0 : off, 1 : one, 2: all
+        this.isRepeat  = false;
+
+        //TODO: fix this
+        if (typeof rawTracks !== 'undefined') {
+            this.rawTracks = rawTracks;
+        } else {
+            this.rawTracks = [];
+        }
+        if (typeof callback !== 'undefined') {
+            this.callback = callback;
+        } else {
+            this.callback = null;
+        }
+
+        // Boolean to add to know if tracks are set or not
+        this.tracks = [];
+        this.currentTrack = 0;
+        this.getTracksIntervalId = -1; // Interval id for _getTracksFromServer_aux
+
+
+        this.trackTotal    = 0;
+        this.artistTotal   = 0;
+        this.albumTotal    = 0;
+        this.durationTotal = 0;
+
+        var viewkeys = Object.keys(window.app.availableViews);
+        this.views = new Array(viewkeys.length).fill(null);
+        this.activeView = window.app.availableViews[viewkeys[0]];
+
+        this._init(); // Playlist initialization
     }
-    if (typeof callback !== 'undefined') {
-        this.callback = callback;
-    } else {
-        this.callback = null;
-    }
 
-    // Boolean to add to know if tracks are set or not
-    this.tracks = [];
-    this.currentTrack = 0;
-    this.getTracksIntervalId = -1; // Interval id for _getTracksFromServer_aux
-
-
-    this.trackTotal    = 0;
-    this.artistTotal   = 0;
-    this.albumTotal    = 0;
-    this.durationTotal = 0;
-
-    var viewkeys = Object.keys(window.app.availableViews);
-    this.views = new Array(viewkeys.length).fill(null);
-    this.activeView = window.app.availableViews[viewkeys[0]];
-
-    this._init(); // Playlist initialization
-};
-
-Playlist.prototype = {
-
-    _init: function() {
+    _init() {
         //if (typeof rawTracks === undefined) { return; }
 
         if (this.isLoading) {
@@ -73,17 +76,17 @@ Playlist.prototype = {
         else {
             if (this.isLibrary) { this._newLibrary(); } // Library creation process
         }
-    },
+    }
 
 
     /*  Library creation and loading  */
 
-    _loadLibrary: function() {
+    _loadLibrary() {
         this._fillTracks(this.rawTracks);
-    },
+    }
 
 
-    _newLibrary: function() {
+    _newLibrary() {
         this.isLibrary = true;
         var that = this;
 
@@ -103,18 +106,18 @@ Playlist.prototype = {
                 // TODO : Typography style to set - Replace newLibrary bool by radiobox (must disapear in the end)
 
                 that.ui.infoLabel.innerHTML = "Welcome! Fill the path with your library's one, name it and let the magic begin!" +
-                    "<br><br>Some additionnal features are waiting for you if your library is synced with other devices, using " +
-                    "<a href=\"http://syncthing.net\" target=\"_blank\">SyncThing</a>.<br><br>Check out the " +
-                    "<a href=\"https://github.com/Squadella/ManaZeak\" target=\"_blank\">read me</a> to know more about it.";
+                "<br><br>Some additionnal features are waiting for you if your library is synced with other devices, using " +
+                "<a href=\"http://syncthing.net\" target=\"_blank\">SyncThing</a>.<br><br>Check out the " +
+                "<a href=\"https://github.com/Squadella/ManaZeak\" target=\"_blank\">read me</a> to know more about it.";
                 // TODO : remove path input depending on radioBox
 
                 that.ui.scan.addEventListener("click", that._checkInputs.bind(that));
             }
         );
-    },
+    }
 
 
-    _checkInputs: function() {
+    _checkInputs() {
         if (this.ui.name.value !== '' && this.ui.path.value !== '') {
             this._requestNewLibrary();
             // TODO : remove ui.scan listener
@@ -137,10 +140,10 @@ Playlist.prototype = {
                 new Notification("Both fields are empty.", "You must fill both fields to create a new library.");
             }
         }
-    },
+    }
 
 
-    _requestNewLibrary: function() {
+    _requestNewLibrary() {
         var that = this;
 
         JSONParsedPostRequest(
@@ -152,11 +155,11 @@ Playlist.prototype = {
             }),
             function(response) {
                 /* response = {
-                 *     DONE:       bool
-                 *     LIBRARY_ID: int or undefined
-                 *     ERROR_H1:   string
-                 *     ERROR_MSG:  string
-                 * } */
+                *     DONE:       bool
+                *     LIBRARY_ID: int or undefined
+                *     ERROR_H1:   string
+                *     ERROR_MSG:  string
+                * } */
                 if (response.DONE) {
                     that.name = that.ui.name.value;
                     that.scanModal = new Modal("scanLibrary");
@@ -170,10 +173,10 @@ Playlist.prototype = {
                 }
             }
         );
-    },
+    }
 
 
-    _initialLibraryScan: function(libraryId) {
+    _initialLibraryScan(libraryId) {
         var that = this;
 
         JSONParsedPostRequest(
@@ -183,11 +186,11 @@ Playlist.prototype = {
             }),
             function(response) {
                 /* response = {
-                 *     DONE:        bool
-                 *     PLAYLIST_ID: int or undefined
-                 *     ERROR_H1:    string
-                 *     ERROR_MSG:   string
-                 * } */
+                *     DONE:        bool
+                *     PLAYLIST_ID: int or undefined
+                *     ERROR_H1:    string
+                *     ERROR_MSG:   string
+                * } */
                 if (response.DONE) {
                     that._getTracksFromServer(response.PLAYLIST_ID);
                 }
@@ -197,19 +200,19 @@ Playlist.prototype = {
                 }
             }
         );
-    },
+    }
 
 
-    _getTracksFromServer: function(playlistId) {
+    _getTracksFromServer(playlistId) {
         var that = this;
 
         this.getTracksIntervalId = setInterval(function() {
             that._getTracksFromServer_aux(playlistId);
         }, 500); // called every .5s
-    },
+    }
 
 
-    _getTracksFromServer_aux: function(playlistId) {
+    _getTracksFromServer_aux(playlistId) {
         var that = this;
 
         JSONParsedPostRequest(
@@ -219,10 +222,10 @@ Playlist.prototype = {
             }),
             function(response) {
                 /* response = {
-                 *     DONE:        bool
-                 *     ERROR_H1:    string
-                 *     ERROR_MSG:   string
-                 * } */
+                *     DONE:        bool
+                *     ERROR_H1:    string
+                *     ERROR_MSG:   string
+                * } */
                 var self = that;
 
                 if (response.DONE) {
@@ -254,10 +257,10 @@ Playlist.prototype = {
                 }
             }
         );
-    },
+    }
 
 
-    getPlaylistsTracks: function(callback) {
+    getPlaylistsTracks(callback) {
         var that = this;
 
         JSONParsedPostRequest(
@@ -278,21 +281,21 @@ Playlist.prototype = {
                 }
             }
         );
-    },
+    }
 
 
     /* Class utilities */
 
-    _fillTracks: function(tracks) {
+    _fillTracks(tracks) {
         for (var i = 0; i < tracks.length ;++i) {
             ++this.trackTotal;
             this.durationTotal += tracks[i].DURATION;
             this.tracks.push(new Track(tracks[i]));
         }
-    },
+    }
 
 
-    playNextTrack: function() {
+    playNextTrack() {
         var that = this;
 
         if (this.repeatMode === 1) {
@@ -301,79 +304,79 @@ Playlist.prototype = {
             switch (this.shuffleMode) {
 
                 case 0: // Shuffle off
-                    if (this.repeatMode !== 0) {
+                if (this.repeatMode !== 0) {
+                    this.currentTrack = this.activeView.getNextEntry();
+                    window.app.changeTrack(this.currentTrack);
+                } else {
+                    if (this.activeView.isLastEntry()) {
+                        window.app.stopPlayback();
+                    } else {
                         this.currentTrack = this.activeView.getNextEntry();
                         window.app.changeTrack(this.currentTrack);
-                    } else {
-                        if (this.activeView.isLastEntry()) {
-                            window.app.stopPlayback();
-                        } else {
-                            this.currentTrack = this.activeView.getNextEntry();
-                            window.app.changeTrack(this.currentTrack);
-                        }
                     }
-                    break;
+                }
+                break;
 
                 case 1: // Random
-                    JSONParsedPostRequest(
-                        "ajax/randomNextTrack/",
-                        JSON.stringify({
-                            PLAYLIST_ID: that.id
-                        }),
-                        function(response) {
+                JSONParsedPostRequest(
+                    "ajax/randomNextTrack/",
+                    JSON.stringify({
+                        PLAYLIST_ID: that.id
+                    }),
+                    function(response) {
+                        that.currentTrack = that.activeView.getEntryById(response.TRACK_ID);
+                        window.app.changeTrack(that.currentTrack);
+                    }
+                );
+                break;
+
+                case 2: // Shuffle on
+                JSONParsedPostRequest(
+                    "ajax/shuffleNextTrack/",
+                    JSON.stringify({
+                        PLAYLIST_ID: that.id
+                    }),
+                    function(response) {
+                        if (response.LAST) {
+                            window.app.stopPlayback();
+                        } else {
                             that.currentTrack = that.activeView.getEntryById(response.TRACK_ID);
                             window.app.changeTrack(that.currentTrack);
                         }
-                    );
-                    break;
-
-                case 2: // Shuffle on
-                    JSONParsedPostRequest(
-                        "ajax/shuffleNextTrack/",
-                        JSON.stringify({
-                            PLAYLIST_ID: that.id
-                        }),
-                        function(response) {
-                            if (response.LAST) {
-                                window.app.stopPlayback();
-                            } else {
-                                that.currentTrack = that.activeView.getEntryById(response.TRACK_ID);
-                                window.app.changeTrack(that.currentTrack);
-                            }
-                        }
-                    );
-                    break;
+                    }
+                );
+                break;
 
                 default:
-                    break;
+                break;
             }
         }
-    },
+    }
 
 
-    playPreviousTrack: function() {
+    playPreviousTrack() {
         switch (this.shuffleMode) {
 
             case 0: // Shuffle off
-                this.currentTrack = this.activeView.getPreviousEntry();
-                window.app.changeTrack(this.currentTrack);
-                break;
+            this.currentTrack = this.activeView.getPreviousEntry();
+            window.app.changeTrack(this.currentTrack);
+            break;
 
             case 1: // Random
-                //TODO: Get from server history
-                break;
+            //TODO: Get from server history
+            break;
 
             case 2: // Shuffle on
-                //TODO: Get from server history
-                break;
+            //TODO: Get from server history
+            break;
 
             default:
-                break;
+            break;
         }
-    },
+    }
 
 
-    toggleShuffle: function() {
+    toggleShuffle() {
         ++this.shuffleMode;
         this.shuffleMode %= 3;
 
@@ -387,10 +390,10 @@ Playlist.prototype = {
         );
 
         window.app.refreshUI();
-    },
+    }
 
 
-    toggleRepeat: function() {
+    toggleRepeat() {
         ++this.repeatMode;
         this.repeatMode %= 3;
 
@@ -404,15 +407,15 @@ Playlist.prototype = {
         );
 
         window.app.refreshUI();
-    },
+    }
 
 
-    activate: function() {
+    activate() {
         window.app.activePlaylist = this;
         this.showView(window.app.availableViews.LIST);
-    },
+    }
 
-    showView: function(viewType) {
+    showView(viewType) {
         var v = this.views[viewType.index];
         if(v === null) {
             this.views[viewType.index] = new viewType.class(viewType.class.prototype.getDataFromPlaylist(this));
@@ -421,28 +424,33 @@ Playlist.prototype = {
         v.show();
 
         this.activeView = v;
-    },
+    }
 
 
-    updateView: function(track) {
+    updateView(track) {
         this.currentTrack = track; // TODO : handle list sorting, search for entry in view instead
         this.activeView.setSelected(track);
-    },
+    }
 
 
-    refreshViews: function() {
+    refreshViews() {
         for(var i = 0; i < this.views.length; ++i)
-            if(this.views[i] !== null)
-                this.views[i].init(this.views[i].getDataFromPlaylist(this));
-    },
+        if(this.views[i] !== null)
+        this.views[i].init(this.views[i].getDataFromPlaylist(this));
+    }
 
     // Class Getters and Setters
-    getId: function()         { return this.id;        },
-    getTracks: function()     { return this.tracks;    },
-    getName: function()       { return this.name;      },
-    getIsLibrary: function()  { return this.isLibrary; },
-    getshuffleMode: function()  { return this.shuffleMode; },
-    getRepeatMode: function()  { return this.repeatMode; },
+    getId()         { return this.id;        }
+    getTracks()     { return this.tracks;    }
+    getName()       { return this.name;      }
+    getIsLibrary()  { return this.isLibrary; }
+    getshuffleMode()  { return this.shuffleMode; }
+    getRepeatMode()  { return this.repeatMode; }
 
-    setName: function(name)   { this.name = name;      }
-};
+    setName(name)   { this.name = name;      }
+
+
+}
+
+
+export default Playlist

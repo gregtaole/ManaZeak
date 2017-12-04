@@ -1,26 +1,21 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  ListView class - classical list view                                               *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var View = function(data) {
+*                                                                                     *
+*  ListView class - classical list view                                               *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+class View {
+    constructor(data) {
+        this.pageContainer = document.getElementById("mainContainer");
+        this.container = document.createElement("DIV");
+    }
 
-    this.pageContainer = document.getElementById("mainContainer");
-    this.container = document.createElement("DIV");
-
-    this.init(data);
-};
-
-View.prototype = {
-
-    init: function(data) {
+    init(data) {
         this.container.innerHTML = "";
         this._init(data);
         this._eventListener();
-    },
+    }
 
-
-    show: function() {
+    show() {
         this.pageContainer.innerHTML = "";
         this.pageContainer.appendChild(this.container);
 
@@ -28,18 +23,17 @@ View.prototype = {
         if (this.listView.scrollHeight > this.listView.clientHeight) {
             this.header.container.className += " columnHeaderOffset";
         }
-    },
-
-
-    getDataFromPlaylist: function(playlist) {
-        return null;
-    },
-
-
-    _init: function(data) {
-    },
-
-
-    _eventListener: function() {
     }
-};
+
+    getDataFromPlaylist(playlist) {
+        return null;
+    }
+
+    _init(data) {
+    }
+
+    _eventListener() {
+    }
+}
+
+export default View;

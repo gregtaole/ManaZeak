@@ -1,29 +1,32 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  Controls class - handle the playlist info container (right/footbar)                *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var Controls = function(container) {
+*                                                                                     *
+*  Controls class - handle the playlist info container (right/footbar)                *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    this._createUI(container);
+import VolumeBar from './VolumeBar.js'
+import QueuePreview from './QueuePreview.js'
 
-    this.volumeBar   = new VolumeBar(this.container);
-    this.queuePreview = new QueuePreview(this.ui.queueExpander.button);
+class Controls {
+    constructor(container) {
 
-    this._eventListener();
-};
+        this._createUI(container);
+
+        this.volumeBar   = new VolumeBar(this.container);
+        this.queuePreview = new QueuePreview(this.ui.queueExpander.button);
+
+        this._eventListener();
+    }
 
 
-Controls.prototype = {
-
-    setPlayPause: function() {
+    setPlayPause() {
         if(window.app.player.getIsPlaying() === true)
-            this.ui.play.image.src = "/static/img/player/pause.svg";
+        this.ui.play.image.src = "/static/img/player/pause.svg";
         else
-            this.ui.play.image.src = "/static/img/player/play.svg";
-    },
+        this.ui.play.image.src = "/static/img/player/play.svg";
+    }
 
-    _createUI: function (container) {
+    _createUI (container) {
         this.container = document.createElement("DIV");
 
         this.ui = {
@@ -101,9 +104,9 @@ Controls.prototype = {
         this.container.appendChild(this.ui.queueExpander.button);
 
         container.appendChild(this.container);
-    },
+    }
 
-    _eventListener: function() {
+    _eventListener() {
         var that = this;
         // Button event listeners
         this.ui.play.button.addEventListener("click", window.app.togglePlay.bind(window.app));
@@ -117,4 +120,6 @@ Controls.prototype = {
         this.ui.previous.button.addEventListener("click", window.app.previous.bind(window.app));
         this.ui.queueExpander.button.addEventListener("click", this.queuePreview.show.bind(this.queuePreview));
     }
-};
+}
+
+export default Controls

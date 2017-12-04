@@ -1,18 +1,15 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  TrackPreview class - handle the track info container (left/footbar)                *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var TrackPreview = function(container) {
+*                                                                                     *
+*  TrackPreview class - handle the track info container (left/footbar)                *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+class TrackPreview {
+    constructor(container) {
+        this._createUI(container);
+        this._eventListener();
+    }
 
-    this._createUI(container);
-    this._eventListener();
-};
-
-
-TrackPreview.prototype = {
-
-    changeTrack: function(track, cover) {
+    changeTrack(track, cover) {
         if (cover == null || cover == '') { cover = "../static/img/utils/defaultcover.svg"; }
         else { cover = '../static/img/covers/' + cover; }
         // TODO : handle cover smooth transition
@@ -28,13 +25,13 @@ TrackPreview.prototype = {
         }
 
         this.ui.genre.innerHTML = track.genre;
-    },
+    }
 
-    setVisible: function(visible) {
+    setVisible(visible) {
         this.ui.container.style.opacity  = visible ? 1 : 0;
-    },
+    }
 
-    _createUI: function(container) {
+    _createUI(container) {
 
         this.ui = {
             container: document.createElement("DIV"),
@@ -85,9 +82,9 @@ TrackPreview.prototype = {
         this.ui.container.appendChild(this.listContainer);
 
         container.appendChild(this.ui.container);
-    },
+    }
 
-    _eventListener: function() {
+    _eventListener() {
         var that = this;
 
         window.app.addListener(["togglePlay", "changeTrack"], function() {
@@ -98,4 +95,6 @@ TrackPreview.prototype = {
             that.setVisible(false);
         });
     }
-};
+}
+
+export default TrackPreview

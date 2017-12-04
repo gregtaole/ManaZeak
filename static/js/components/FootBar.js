@@ -1,37 +1,38 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  PlaylistBar class - handle the playlist bar                                        *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var FootBar = function() {
+*                                                                                     *
+*  PlaylistBar class - handle the playlist bar                                        *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+import TrackPreview from './elements/TrackPreview.js'
+import Controls from './elements/Controls.js'
+import PlaylistPreview from './elements/PlaylistPreview.js'
+import ProgressBar from './elements/ProgressBar.js'
 
-    this.footBar = document.createElement("DIV");
+class FootBar {
+    constructor() {
+        this.footBar = document.createElement("DIV");
 
-    this.controlsContainer = document.createElement("DIV");
-    this.progressContainer = document.createElement("DIV");
+        this.controlsContainer = document.createElement("DIV");
+        this.progressContainer = document.createElement("DIV");
 
-    this.footBar.id = "footBar";
-    this.controlsContainer.className = "mzk-controls-container";
+        this.footBar.id = "footBar";
+        this.controlsContainer.className = "mzk-controls-container";
 
-    this.trackPreview    = new TrackPreview(this.footBar);
-    this.controls        = new Controls(this.controlsContainer);
-    this.playlistPreview = new PlaylistPreview(this.footBar);
+        this.trackPreview    = new TrackPreview(this.footBar);
+        this.controls        = new Controls(this.controlsContainer);
+        this.playlistPreview = new PlaylistPreview(this.footBar);
 
-    this.footBar.appendChild(this.controlsContainer);
-    this.progressBar = new ProgressBar(this.controlsContainer);
+        this.footBar.appendChild(this.controlsContainer);
+        this.progressBar = new ProgressBar(this.controlsContainer);
 
-    this._init();
-};
+        this._init();
+    }
 
-
-FootBar.prototype = {
-
-    _init: function() {
+    _init() {
         this._eventListener();
-    },
+    }
 
-
-    _eventListener: function() {
+    _eventListener() {
         var that = this;
 
         window.app.addListener('togglePlay', function() {
@@ -49,19 +50,23 @@ FootBar.prototype = {
             that.progressBar.updateProgress(window.app.player.getPlayer());
         });
 
-    },
+    }
 
-    volumeUp: function(event) {
+    volumeUp(event) {
         this.controls.volumeBar.volumeUp(event);
-    },
+    }
 
-    volumeDown: function(event) {
+    volumeDown(event) {
         this.controls.volumeBar.volumeDown(event);
-    },
+    }
 
-    delayHideVolume: function() {
+    delayHideVolume() {
         this.controls.volumeBar.delayHideVolume();
-    },
+    }
 
-    getFootBar: function() { return this.footBar; }
-};
+    getFootBar() { return this.footBar; }
+
+
+}
+
+export default FootBar;

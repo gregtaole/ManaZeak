@@ -1,6 +1,9 @@
 "use strict";
 
-function extendClass(parent, child) {
+export function extendClass(parent, child) {
+    if(!parent.prototype)
+        return;
+
     var proto = Object.create(parent.prototype);
     for(var i in child.prototype) {
         proto[i] = child.prototype[i];
@@ -8,13 +11,13 @@ function extendClass(parent, child) {
     child.prototype = proto;
 }
 
-function precisionRound(value, precision) {
+export function precisionRound(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
 }
 
 
-function secondsToTimecode(time) {
+export function secondsToTimecode(time) {
     // TODO : add days
     var transformedTime = {
         d: 0,
@@ -43,13 +46,13 @@ function secondsToTimecode(time) {
 }
 
 
-function sortObjectArrayBy(key, ascending, subobject) {
+export function sortObjectArrayBy(key, ascending, subobject) {
     return function(a, b) {
         if(subobject != null) {
             a = a[subobject];
             b = b[subobject];
         }
-        
+
         if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) { return 0; }
 
         const varA = (typeof a[key] === 'string') ? a[key].toUpperCase() : a[key];
@@ -64,7 +67,7 @@ function sortObjectArrayBy(key, ascending, subobject) {
 }
 
 
-function getCookies() {
+export function getCookies() {
     var cookies = {};
 
     if (document.cookie && document.cookie !== '') {
@@ -79,19 +82,18 @@ function getCookies() {
     return cookies;
 }
 
-function toggleVisibilityLock(object) {
+export function toggleVisibilityLock(object) {
     if(object.classList.contains("mzk-visible"))
         removeVisibilityLock(object);
     else
         addVisibilityLock(object);
 }
 
-function addVisibilityLock(object) { // TODO : rename to addClass -> modify modal accordingly
+export function addVisibilityLock(object) { // TODO : rename to addClass -> modify modal accordingly
     object.classList.add("mzk-visible");
 }
 
-
-function removeVisibilityLock(object) {
+export function removeVisibilityLock(object) {
     object.classList.remove("mzk-visible");
 }
 
@@ -110,7 +112,7 @@ function getRequest(url, callback) {
 }
 
 
-function JSONParsedGetRequest(url, http, callback) {
+export function JSONParsedGetRequest(url, http, callback) {
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function() {
@@ -126,7 +128,7 @@ function JSONParsedGetRequest(url, http, callback) {
 }
 
 
-function JSONParsedPostRequest(url, message, callback) {
+export function JSONParsedPostRequest(url, message, callback) {
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function() {
@@ -149,7 +151,7 @@ function JSONMoodbarPostRequest(url, cookies, message, callback) {
 
 // Credit for this function : "Valodim"
 // https://gist.github.com/Valodim/5225460
-function renderMoodFile(file, parentDiv) {
+export function renderMoodFile(file, parentDiv) {
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', file, true);

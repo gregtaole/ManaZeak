@@ -1,9 +1,11 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  UserMenu class - handle the user's menu                                            *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var UserMenu = function(parent) {
+*                                                                                     *
+*  UserMenu class - handle the user's menu                                            *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+import { removeVisibilityLock } from '../../utils/Utils.js'
+
+export default function UserMenu(parent) {
     this.menu = document.createElement("div");
     this.menu.id = "menu";
     this.menuEntry = {
@@ -13,14 +15,7 @@ var UserMenu = function(parent) {
     this.parent = parent;
     this.isVisible = false;
 
-
-    this._init();
-};
-
-
-UserMenu.prototype = {
-
-    _init: function() {
+    UserMenu.prototype._init = function() {
         this.parent.appendChild(this.menu);
         this.menuEntry.logout = document.createElement("div");
         this.menuEntry.logout.id = "logOut";
@@ -28,13 +23,11 @@ UserMenu.prototype = {
         this.menuEntry.logout.innerHTML = "Log out";
         this.menu.appendChild(this.menuEntry.logout);
 
-
         this._eventListener();
         this._keyListener();
     },
 
-
-    logOut: function() {
+    UserMenu.prototype.logOut = function() {
         getRequest(
             "logout",
             function() {
@@ -44,7 +37,7 @@ UserMenu.prototype = {
     },
 
 
-    toggleVisibilityLock: function() {
+    UserMenu.prototype.toggleVisibilityLock = function() {
         if (!this.isVisible) {
             this.isVisible = !this.isVisible;
             addVisibilityLock(this.menu);
@@ -55,31 +48,34 @@ UserMenu.prototype = {
     },
 
 
-    clickOutside: function(e) {
+    UserMenu.prototype.clickOutside = function(e) {
         if (!document.getElementById("userExpander").contains(e.target) && !document.getElementById("menu").contains(e.target)) {
             removeVisibilityLock(this.menu);
         }
     },
 
 
-    _eventListener: function() {
+    UserMenu.prototype._eventListener = function() {
         this.menuEntry.logout.addEventListener("click", this.logOut.bind(this));
         this.outside.addEventListener("click", this.clickOutside.bind(this), false);
     },
 
 
-    _keyListener: function() {
+    UserMenu.prototype._keyListener = function() {
         var that = this;
 
         // Key pressed event
         document.addEventListener("keydown", function(event) {
             switch (event.keyCode) {
                 case 27: // Esc
-                    if (that.isVisible) { that.toggleVisibilityLock(); }
-                    break;
+                if (that.isVisible) { that.toggleVisibilityLock(); }
+                break;
                 default:
-                    break;
+                break;
             }
         });
     }
-};
+
+
+    this._init();
+}

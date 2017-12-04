@@ -125,3 +125,5 @@ Output.txt
 
 node_modules/
 moodbar/moodbar-0.1.2
+package-lock.json
+static/dist

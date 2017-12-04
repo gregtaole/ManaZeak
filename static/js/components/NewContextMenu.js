@@ -1,23 +1,23 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  NewContextMenu class - handle the context menu on right click                      *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-var NewContextMenu = function(parentElement, openCallback)
-{
-    this.contextMenu = null;
-    this.parentElement = parentElement;
-    this.openCallback = openCallback;
-    this.element = null;
-    this.isVisible = false;
+*                                                                                     *
+*  NewContextMenu class - handle the context menu on right click                      *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+import ContextMenuEntry from './entries/ContextMenuEntry.js'
 
-    this._init();
-};
+class NewContextMenu {
+    constructor(parentElement, openCallback)
+    {
+        this.contextMenu = null;
+        this.parentElement = parentElement;
+        this.openCallback = openCallback;
+        this.element = null;
+        this.isVisible = false;
 
+        this._init();
+    }
 
-NewContextMenu.prototype = {
-
-    _init: function()
+    _init()
     {
         this.contextMenu = new ContextMenuEntry("master", "", null);
         this.contextMenu.activate_event_listener();
@@ -29,25 +29,26 @@ NewContextMenu.prototype = {
 
         this._eventListener();
         this._keyListener();
-    },
+    }
 
-    addEntry: function(entryPath, displayStr, callback /*, more args for the callback */) {
+    addEntry(entryPath, displayStr, callback /*, more args for the callback */) {
         var path = entryPath;
         var context;
         if(Array.isArray(entryPath)) {
 
         } else {
-            context = Object.create(ContextMenuEntry.prototype);
-            ContextMenuEntry.apply(context, arguments);
-            this.contextMenu.add_child(context);
+            // context = Object.create(ContextMenuEntry.prototype);
+            // ContextMenuEntry.apply(context, arguments);
+            // this.contextMenu.add_child(context);
+
         }
-    },
+    }
 
-    reattach: function() {
+    reattach() {
         this.parentElement.insertBefore(this.element, this.parentElement.firstChild);
-    },
+    }
 
-    _eventListener: function()
+    _eventListener()
     {
         var self = this;
         this.parentElement.addEventListener("contextmenu", function(event)
@@ -81,13 +82,13 @@ NewContextMenu.prototype = {
             while(target)
             {
                 if(target.id)
-                    self.element.classList.add("mzk-ctx-include-" + target.id);
+                self.element.classList.add("mzk-ctx-include-" + target.id);
                 target = target.parentNode;
             }
 
             addVisibilityLock(self.element);
             if(self.openCallback)
-                self.openCallback(event);
+            self.openCallback(event);
 
             event.preventDefault();
             event.stopPropagation();
@@ -99,10 +100,10 @@ NewContextMenu.prototype = {
             self.element.className = "";
             self.contextMenu.close_all();
         });
-    },
+    }
 
 
-    _keyListener: function()
+    _keyListener()
     {
         var that = this;
 
@@ -112,11 +113,14 @@ NewContextMenu.prototype = {
             switch (event.keyCode)
             {
                 case 27: // Esc
-                    if (that.isVisible) { that.toggleVisibilityLock(); }
-                    break;
+                if (that.isVisible) { that.toggleVisibilityLock(); }
+                break;
                 default:
-                    break;
+                break;
             }
         });
     }
-};
+
+}
+
+export default NewContextMenu;
