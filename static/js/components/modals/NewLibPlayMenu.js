@@ -1,24 +1,22 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                                     *
- *  UserMenu class - handle the user's menu                                            *
- *                                                                                     *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-export default function NewLibPlayMenu() {
-    this.newLibPlayMenu = null;
-    this.entries = {
-        library: null,
-        playlist: null
-    };
-    this.outside = document.body;
-    this.isVisible = false;
+*                                                                                     *
+*  UserMenu class - handle the user's menu                                            *
+*                                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+class NewLibPlayMenu {
+    constructor(){
+        this.newLibPlayMenu = null;
+        this.entries = {
+            library: null,
+            playlist: null
+        };
+        this.outside = document.body;
+        this.isVisible = false;
 
-    this._init();
-};
+        this._init();
+    }
 
-
-NewLibPlayMenu.prototype = {
-
-    _init: function() {
+    _init() {
         this.newLibPlayMenu = document.createElement("div");
         this.newLibPlayMenu.id = "newLibPlay";
 
@@ -35,10 +33,9 @@ NewLibPlayMenu.prototype = {
         this._keyListener();
 
         document.body.appendChild(this.newLibPlayMenu);
-    },
+    }
 
-
-    toggleVisibilityLock: function(event) {
+    toggleVisibilityLock(event) {
         if (!this.isVisible) {
             this.isVisible = !this.isVisible;
             this.newLibPlayMenu.style.top  = event.pageY + "px";
@@ -48,41 +45,39 @@ NewLibPlayMenu.prototype = {
             this.isVisible = !this.isVisible;
             removeVisibilityLock(this.newLibPlayMenu);
         }
-    },
+    }
 
-
-    newLibrary: function(event) {
+    newLibrary(event) {
         this.toggleVisibilityLock(event);
         window.app.requestNewLibrary();
-    },
+    }
 
-
-    newPlaylist: function(event) {
+    newPlaylist(event) {
         this.toggleVisibilityLock(event);
-    },
+    }
 
-
-    _eventListener: function() {
+    _eventListener() {
         this.entries.library.addEventListener("click", this.newLibrary.bind(this));
         this.entries.playlist.addEventListener("click", this.newPlaylist.bind(this));
-    },
+    }
 
-
-    _keyListener: function() {
+    _keyListener() {
         var that = this;
 
         // Key pressed event
         document.addEventListener("keydown", function(event) {
             switch (event.keyCode) {
                 case 27: // Esc
-                    if (that.isVisible) { that.toggleVisibilityLock(); }
-                    break;
+                if (that.isVisible) { that.toggleVisibilityLock(); }
+                break;
                 default:
-                    break;
+                break;
             }
         });
-    },
+    }
 
 
-    getContextMenu: function() { return this.contextMenu; }
-};
+    getContextMenu() { return this.contextMenu; }
+}
+
+export default NewLibPlayMenu

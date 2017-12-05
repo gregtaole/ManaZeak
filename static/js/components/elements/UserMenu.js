@@ -5,17 +5,21 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 import { removeVisibilityLock } from '../../utils/Utils.js'
 
-export default function UserMenu(parent) {
-    this.menu = document.createElement("div");
-    this.menu.id = "menu";
-    this.menuEntry = {
-        logout: null
-    };
-    this.outside = document.body;
-    this.parent = parent;
-    this.isVisible = false;
+class UserMenu {
+    constructor(parent) {
+        this.menu = document.createElement("div");
+        this.menu.id = "menu";
+        this.menuEntry = {
+            logout: null
+        };
+        this.outside = document.body;
+        this.parent = parent;
+        this.isVisible = false;
 
-    UserMenu.prototype._init = function() {
+        this._init();
+    }
+
+    _init() {
         this.parent.appendChild(this.menu);
         this.menuEntry.logout = document.createElement("div");
         this.menuEntry.logout.id = "logOut";
@@ -25,19 +29,18 @@ export default function UserMenu(parent) {
 
         this._eventListener();
         this._keyListener();
-    },
+    }
 
-    UserMenu.prototype.logOut = function() {
+    logOut() {
         getRequest(
             "logout",
             function() {
                 location.reload();
             }
         );
-    },
+    }
 
-
-    UserMenu.prototype.toggleVisibilityLock = function() {
+    toggleVisibilityLock() {
         if (!this.isVisible) {
             this.isVisible = !this.isVisible;
             addVisibilityLock(this.menu);
@@ -45,23 +48,23 @@ export default function UserMenu(parent) {
             this.isVisible = !this.isVisible;
             removeVisibilityLock(this.menu);
         }
-    },
+    }
 
 
-    UserMenu.prototype.clickOutside = function(e) {
+    clickOutside(e) {
         if (!document.getElementById("userExpander").contains(e.target) && !document.getElementById("menu").contains(e.target)) {
             removeVisibilityLock(this.menu);
         }
-    },
+    }
 
 
-    UserMenu.prototype._eventListener = function() {
+    _eventListener() {
         this.menuEntry.logout.addEventListener("click", this.logOut.bind(this));
         this.outside.addEventListener("click", this.clickOutside.bind(this), false);
-    },
+    }
 
 
-    UserMenu.prototype._keyListener = function() {
+    _keyListener() {
         var that = this;
 
         // Key pressed event
@@ -75,7 +78,6 @@ export default function UserMenu(parent) {
             }
         });
     }
-
-
-    this._init();
 }
+
+export default UserMenu

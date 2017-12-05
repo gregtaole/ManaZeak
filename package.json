@@ -4,7 +4,7 @@
   "description": "",
   "main": "static/js/App.js",
   "scripts": {
-    "dev": "webpack --watch"
+    "dev": "webpack --watch --config webpack.config.js"
   },
   "repository": {
     "type": "git",
